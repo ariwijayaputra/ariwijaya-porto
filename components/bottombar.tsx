@@ -2,6 +2,7 @@
 
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
+import { useLang } from "@/components/lang";
 import { activeSection } from "@/components/snap-scroll";
 import { blurIn, useReveal } from "@/components/splash";
 
@@ -36,6 +37,7 @@ export function useActiveSection() {
 // Mobile navigation. The line and dot only mirror the section in view; they aren't a slider.
 export default function Bottombar() {
   const active = useActiveSection();
+  const en = useLang() === "en";
   const rowRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
@@ -68,7 +70,7 @@ export default function Bottombar() {
   }, [active]);
 
   return (
-    <nav aria-label="Navigasi" className="page-grid sticky bottom-0 z-10 h-(--bar-h) bg-ink text-small lg:hidden">
+    <nav aria-label={en ? "Navigation" : "Navigasi"} className="page-grid sticky bottom-0 z-10 h-(--bar-h) bg-ink text-small lg:hidden">
       <div className="relative col-span-full">
         <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-line" />
         <div

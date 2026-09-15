@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { useRef } from "react";
 import { tabs, useActiveSection } from "@/components/bottombar";
+import { useLang } from "@/components/lang";
 import { blurIn, useReveal } from "@/components/splash";
 
 const links = [
@@ -32,9 +33,9 @@ const links = [
 ];
 
 const nav = [
-  { id: "home", label: "Home" },
-  { id: "work", label: "Proyek" },
-  { id: "contact", label: "Kontak" },
+  { id: "home", label: "Home", en: "Home" },
+  { id: "work", label: "Proyek", en: "Project" },
+  { id: "contact", label: "Kontak", en: "Contact" },
 ];
 
 // mobile stacks headline / text / form / links / copyright (rows placed explicitly, the
@@ -42,6 +43,7 @@ const nav = [
 export default function Contact() {
   const root = useRef<HTMLElement>(null);
   const active = tabs[useActiveSection()].id === "contact";
+  const en = useLang() === "en";
 
   // replays on every visit (leaving already fades the section out, see main > section[data-away]):
   // headline word by word, intro line by line, then the form, links and footer
@@ -65,15 +67,16 @@ export default function Contact() {
       data-snap
       className="page-grid min-h-(--section-h) grid-rows-[auto_auto_1fr_auto_auto] pt-9 pb-5 text-body lg:grid-rows-[auto_1fr_auto] lg:pt-14 lg:pb-6"
     >
-      <h2 className="col-span-full font-display text-display uppercase lg:text-right">
-        Mari kolaborasi
+      {/* keyed by language: a switch mid-reveal swaps in fresh nodes instead of fighting SplitText */}
+      <h2 key={`h${en}`} className="col-span-full font-display text-display uppercase lg:text-right">
+        {en ? "Let’s collaborate" : "Mari kolaborasi"}
       </h2>
 
       <div className="contents lg:col-span-5 lg:row-start-2 lg:mt-10 lg:flex lg:flex-col lg:justify-between lg:py-5">
-        <p className="col-span-full row-start-2 mt-10 lg:mt-0">
-          Punya ide, proyek, atau masalah yang ingin dipecahkan? Mari kita
-          bicarakan. Saya selalu terbuka untuk peluang baru, kolaborasi yang
-          menarik, dan membangun sesuatu yang bermakna bersama.
+        <p key={`p${en}`} className="col-span-full row-start-2 mt-10 lg:mt-0">
+          {en
+            ? "Have an idea, a project, or a problem you’d like to solve? Let’s talk about it. I’m always open to new opportunities, interesting collaborations, and building something meaningful together."
+            : "Punya ide, proyek, atau masalah yang ingin dipecahkan? Mari kita bicarakan. Saya selalu terbuka untuk peluang baru, kolaborasi yang menarik, dan membangun sesuatu yang bermakna bersama."}
         </p>
 
         <address className="col-span-full row-start-4 mt-10 flex flex-col items-start gap-5 text-link text-dim not-italic lg:gap-6 lg:text-paper">
@@ -103,34 +106,41 @@ export default function Contact() {
       </div>
 
       {/* ponytail: native mailto form, no backend; swap for an API route if a mail client isn't enough.
-          GET + mailto sends the fields as ?subject=&body= (spec encodes spaces as %20) */}
+          Browsers form-encode GET mailto (spaces -> "+"), so build the URL with encodeURIComponent (%20).
+          action/method stay as the no-JS fallback. */}
       <form
         action="mailto:aryanathaa@gmail.com"
         method="get"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const data = new FormData(e.currentTarget);
+          const q = ["subject", "body"].map((k) => `${k}=${encodeURIComponent(String(data.get(k)))}`).join("&");
+          window.location.href = `mailto:aryanathaa@gmail.com?${q}`;
+        }}
         className="col-span-full row-start-3 -mr-(--margin) mt-10 flex flex-col gap-5 bg-panel px-(--contact-pad) py-8 text-nav lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:py-16"
       >
-        <input type="hidden" name="subject" value="Kolaborasi" />
+        <input type="hidden" name="subject" value={en ? "Collaboration" : "Kolaborasi"} />
         <textarea
           name="body"
           required
-          aria-label="Pesan"
-          placeholder="Ketik pesan untuk saya"
+          aria-label={en ? "Message" : "Pesan"}
+          placeholder={en ? "Type a message for me" : "Ketik pesan untuk saya"}
           className="min-h-10 flex-1 resize-none bg-transparent text-white caret-white outline-none placeholder:text-mute"
         />
         <button
           type="submit"
           className="h-10 self-start bg-white px-3 text-ink transition-colors hover:bg-paper"
         >
-          Kirim Pesan
+          {en ? "Send Message" : "Kirim Pesan"}
         </button>
       </form>
 
       <footer className="col-span-full row-start-5 mt-5 grid grid-cols-subgrid items-baseline lg:row-start-3 lg:mt-16">
         {/* mobile has the bottom bar instead */}
-        <nav aria-label="Navigasi footer" className="hidden gap-4 text-link uppercase lg:col-span-4 lg:flex">
+        <nav aria-label={en ? "Footer navigation" : "Navigasi footer"} className="hidden gap-4 text-link uppercase lg:col-span-4 lg:flex">
           {nav.map((n) => (
             <a key={n.id} href={`#${n.id}`} className="transition-colors hover:text-white">
-              {n.label}
+              {en ? n.en : n.label}
             </a>
           ))}
         </nav>

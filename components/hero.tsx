@@ -2,6 +2,7 @@
 
 import gsap from "gsap";
 import { useRef } from "react";
+import { useLang } from "@/components/lang";
 import { blurIn, useReveal } from "@/components/splash";
 
 // Home section. Once the splash is gone the title floats in word by word
@@ -10,6 +11,7 @@ export default function Hero() {
   const title = useRef<HTMLHeadingElement>(null);
   const intro = useRef<HTMLParagraphElement>(null);
   const copyright = useRef<HTMLParagraphElement>(null);
+  const en = useLang() === "en";
 
   useReveal((split) => {
     const words = split(title.current!, { type: "words" });
@@ -29,22 +31,35 @@ export default function Hero() {
       />
 
       {/* mobile lets the first two lines flow (UBAH IDE / RUMIT JADI / PENGALAMAN) */}
-      <h1 ref={title} className="relative col-span-full font-display text-display uppercase">
-        <span className="lg:block">Ubah ide rumit</span>{" "}
-        <span className="lg:block">jadi pengalaman</span>
-        <span className="block text-right">berkesan</span>
+      {/* keyed by language: a switch mid-reveal swaps in fresh nodes instead of fighting SplitText */}
+      <h1 key={`h${en}`} ref={title} className="relative col-span-full font-display text-display uppercase">
+        <span className="lg:block">{en ? "Turn complex" : "Ubah ide rumit"}</span>{" "}
+        <span className="lg:block">{en ? "ideas to enjoyable" : "jadi pengalaman"}</span>
+        <span className="block text-right">{en ? "experience" : "berkesan"}</span>
       </h1>
 
       <div className="relative col-span-full grid grid-cols-subgrid self-end">
-        <p ref={intro} className="col-span-4 self-end lg:max-w-[32ch]">
-          <span className="text-dim">
-            Saya adalah software engineer yang senang mengubah ide kompleks
-            menjadi pengalaman yang sederhana.
-          </span>{" "}
-          Saya mampu mengerjakan berbagai hal, mulai dari merancang
-          antarmuka hingga membangun sistem di baliknya, dengan memadukan
-          desain yang matang, teknologi yang tepat, dan kode yang bersih.
-        </p>
+        {en ? (
+          <p key="en" ref={intro} className="col-span-4 self-end lg:max-w-[32ch]">
+            <span className="text-dim">
+              I’m a software engineer focused on turning complex ideas into
+              simple digital experiences.
+            </span>{" "}
+            From designing interfaces to building the systems behind them, I
+            enjoy solving problems with thoughtful design, practical
+            technology, and clean code.
+          </p>
+        ) : (
+          <p key="id" ref={intro} className="col-span-4 self-end lg:max-w-[32ch]">
+            <span className="text-dim">
+              Saya adalah software engineer yang senang mengubah ide kompleks
+              menjadi pengalaman yang sederhana.
+            </span>{" "}
+            Saya mampu mengerjakan berbagai hal, mulai dari merancang
+            antarmuka hingga membangun sistem di baliknya, dengan memadukan
+            desain yang matang, teknologi yang tepat, dan kode yang bersih.
+          </p>
+        )}
 
         <p ref={copyright} className="hidden text-mute lg:col-span-4 lg:col-start-9 lg:block lg:self-end lg:text-right">
           Copyright 2026 By Ari Wijaya Putra

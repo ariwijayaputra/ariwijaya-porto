@@ -3,10 +3,12 @@
 import gsap from "gsap";
 import { useRef } from "react";
 import { tabs, useActiveSection } from "@/components/bottombar";
+import { toggleLang, useLang } from "@/components/lang";
 import { blurIn, useReveal } from "@/components/splash";
 
 export default function Navbar() {
   const active = useActiveSection();
+  const lang = useLang();
   const bar = useRef<HTMLDivElement>(null);
 
   // once the splash is gone, the items float in left to right and the line fades in
@@ -51,9 +53,12 @@ export default function Navbar() {
           <p className="col-span-3 font-display text-white uppercase lg:col-span-4 lg:text-center">
             Ari Wijaya Putra
           </p>
-          {/* ponytail: static label, wire up when i18n lands */}
-          <p className="col-span-3 flex items-center justify-self-end gap-2 text-mute lg:col-span-4">
-            ID
+          <button
+            type="button"
+            onClick={toggleLang}
+            aria-label={lang === "en" ? "Ganti ke Bahasa Indonesia" : "Switch to English"}
+            className="col-span-3 flex items-center leading-0 justify-self-end gap-2 text-mute lg:col-span-4">
+            <span className="mt-[0.2rem] uppercase">{lang}</span>
             <svg
               aria-hidden
               viewBox="0 0 24 24"
@@ -65,7 +70,7 @@ export default function Navbar() {
               <circle cx="12" cy="12" r="10" />
               <path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20" />
             </svg>
-          </p>
+          </button>
         </div>
       </nav>
     </header>

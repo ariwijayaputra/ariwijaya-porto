@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { useLang } from "@/components/lang";
 import { scrollToY } from "@/components/snap-scroll";
 import clears from "@/public/img/sample-clears-studio.png";
 import daru from "@/public/img/sample-daru-invitation.png";
@@ -27,6 +28,7 @@ export default function Work() {
   const [{ active, dir }, setView] = useState({ active: 0, dir: 1 });
   const sectionRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
+  const en = useLang() === "en";
   const n = projects.length;
   const project = projects[active];
 
@@ -103,7 +105,7 @@ export default function Work() {
                   onClick={() => goTo(offset)}
                   tabIndex={Math.abs(offset) === 1 ? 0 : -1}
                   aria-hidden={far}
-                  aria-label={offset ? `Lihat proyek ${p.title}` : p.title}
+                  aria-label={offset ? `${en ? "View project" : "Lihat proyek"} ${p.title}` : p.title}
                   className="work-slide relative col-start-1 row-start-1 transition-[transform,opacity] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                   style={
                     {
