@@ -1,4 +1,5 @@
 import Bottombar from "@/components/bottombar";
+import Contact from "@/components/contact";
 import Navbar from "@/components/navbar";
 import SnapScroll from "@/components/snap-scroll";
 import Work from "@/components/work";
@@ -41,6 +42,7 @@ export default function Home() {
         </section>
 
         <Work />
+        <Contact />
       </main>
       <Bottombar />
     </>
