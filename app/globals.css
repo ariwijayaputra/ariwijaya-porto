@@ -4,6 +4,9 @@
   /* 1vw that stops growing past a 1600px viewport (1rem = 16px = 1vw @1600) */
   --vw: min(1vw, 1rem);
   --nav-h: calc(var(--spacing) * 12); /* 48px */
+  --bar-h: calc(var(--spacing) * 16); /* 64px mobile bottom bar, 0 on desktop */
+  /* every section's height: the space between the top navbar and the bottom bar */
+  --section-h: calc(100svh - var(--nav-h) - var(--bar-h));
   --cursor: calc(var(--vw) * 6.944); /* 100px @1440 */
 
   /* mobile (<1024px): 6-col grid on a 360 frame, capped so tablets don't balloon */
@@ -16,6 +19,31 @@
   /* 45px @360, hero wraps to 4 lines; "PENGALAMAN" (~6.9em) must fit 6 cols */
   --fs-display: min(12.58vw, 8.5svh);
   --lh-display: 1.02;
+  --fs-small: clamp(0.625rem, 2.778vw, 0.875rem); /* 10px @360 */
+  /* 37px @360; svh cap keeps 3-line titles inside short phones */
+  --fs-title: min(10.28vw, 5svh);
+  --lh-title: 1.25;
+
+  /* work slider, screenshots are 1368x1004. Mobile: full-width panel with 24px padding @360
+     (svh cap for tablets), neighbours peek 20px out from under the navbar / bottom bar */
+  --work-pad: min(6.667vw, 2.5rem);
+  --work-img-h: min(
+    (min(100cqw, 1600px) - 2 * var(--margin) - 2 * var(--work-pad)) / 1.3625,
+    32svh
+  );
+  --work-img-w: calc(var(--work-img-h) * 1.3625);
+  --work-side: 0.766; /* neighbour scale */
+  --work-blur: min(1.389vw, 0.5rem);
+  --work-peek: calc(var(--spacing) * 5);
+  /* text reveal starts this far off, on the side the image slides in from (--reveal-dir) */
+  --reveal-shift: calc(var(--spacing) * 2.5); /* 10px */
+  /* inner edge of the outermost column, from the screen edge; frozen past 1600 so
+     neighbours stay cropped by the screen. cqw resolves against <main> */
+  --work-edge: calc(
+    var(--margin) +
+      (min(100cqw, 1600px) - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) /
+      var(--cols)
+  );
 
   /* desktop: 12-col grid on a 1440 frame */
   @media (width >= 64rem) {
@@ -29,6 +57,18 @@
     /* 132px @1440; svh cap keeps the hero inside short laptop viewports */
     --fs-display: min(calc(var(--vw) * 9.18), 15svh);
     --lh-display: 1.06;
+    --fs-title: min(calc(var(--vw) * 4.167), 8svh); /* 60px @1440 */
+    --lh-title: 1;
+    --bar-h: 0px;
+    /* active panel at most 66svh tall (off-grid on purpose), 54px padding @1440, width capped at 10 cols */
+    --work-pad: calc(var(--vw) * 3.75);
+    --work-img-h: min(
+      66svh - 2 * var(--work-pad),
+      (var(--vw) * 80.28 - 2 * var(--work-pad)) / 1.3625
+    );
+    --work-side: 0.579;
+    --work-blur: calc(var(--vw) * 0.5);
+    --reveal-shift: 0px;
   }
 }
 
@@ -38,6 +78,7 @@
   --color-dim: #ababab;
   --color-mute: #999999;
   --color-line: #777777;
+  --color-panel: #181818;
 
   --font-sans: var(--font-dm-sans);
   --font-display: var(--font-bellefair);
@@ -48,6 +89,21 @@
   --text-nav--line-height: 1.125;
   --text-display: var(--fs-display);
   --text-display--line-height: var(--lh-display);
+  --text-title: var(--fs-title);
+  --text-title--line-height: var(--lh-title);
+  --text-small: var(--fs-small);
+  --text-small--line-height: 1.2;
+
+  /* blur-in, starting from the same blur as an inactive work item; re-key to replay.
+     0.3s delay + 0.7s lands with the work slide (duration-1000, same easing) */
+  --animate-reveal: reveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      filter: blur(var(--work-blur));
+      translate: 0 calc(var(--reveal-dir, 0) * var(--reveal-shift));
+    }
+  }
 }
 
 /* page grid: 6 cols mobile / 12 cols desktop, capped at 1600px */
@@ -67,6 +123,26 @@
   background: radial-gradient(closest-side, rgb(255 255 255 / 0.1), transparent);
 }
 
+/* work slider item: --o = offset from the active project, --k = its scale.
+   Mobile slides on y (neighbours peek past the bars, needs the panel centred in the frame);
+   desktop on x (bottom-aligned, inner edge on the outermost column) */
+@utility work-slide {
+  transform: translateY(
+      calc(
+        var(--o) * (var(--section-h) / 2 - var(--work-peek) + var(--work-img-h) * var(--work-side) / 2)
+      )
+    )
+    scale(var(--k));
+
+  @media (width >= 64rem) {
+    transform-origin: bottom;
+    transform: translateX(
+        calc(var(--o) * (50cqw - var(--work-edge) + var(--work-img-w) * var(--work-side) / 2))
+      )
+      scale(var(--k));
+  }
+}
+
 /* set by components/cursor.tsx once it's running, so no-JS keeps the native cursor */
 .custom-cursor,
 .custom-cursor * {
@@ -77,4 +153,21 @@ body {
   background: var(--color-ink);
   color: var(--color-paper);
   font-family: var(--font-sans);
+}
+
+/* keeps anchors and paging points under the sticky navbar */
+html {
+  scroll-padding-top: var(--nav-h);
+}
+
+/* mobile paging is native: each swipe snaps to the next [data-snap] point.
+   Desktop pages wheel/keys in components/snap-scroll.tsx instead */
+@media (width < 64rem) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+  [data-snap] {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
 }

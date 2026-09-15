@@ -1,11 +1,15 @@
+import Bottombar from "@/components/bottombar";
 import Navbar from "@/components/navbar";
+import SnapScroll from "@/components/snap-scroll";
+import Work from "@/components/work";
 
 export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="overflow-clip">
-        <section className="page-grid relative min-h-[calc(100svh-var(--nav-h))] grid-rows-[auto_1fr] pt-9 pb-5 text-body lg:pt-14 lg:pb-6">
+      <SnapScroll />
+      <main className="@container overflow-clip">
+        <section id="home" data-snap className="page-grid relative min-h-(--section-h) grid-rows-[auto_1fr] pt-9 pb-5 text-body lg:pt-14 lg:pb-6">
           {/* touch devices get a static glow; mouse users get it on the cursor */}
           <div
             aria-hidden
@@ -35,7 +39,10 @@ export default function Home() {
             </p>
           </div>
         </section>
+
+        <Work />
       </main>
+      <Bottombar />
     </>
   );
 }

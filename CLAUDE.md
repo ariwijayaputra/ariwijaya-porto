@@ -17,6 +17,8 @@ Next.js 16 (App Router, `app/`), React 19, TypeScript strict, Tailwind CSS v4 (C
 - `pnpm lint`: ESLint
 - No test framework is set up.
 
+**Animation:** use **GSAP** (`gsap`) for any animation that needs JavaScript. CSS transitions and keyframes are fine for simple state changes.
+
 Next 16 differs from older versions (for example, the typed global `LayoutProps<"/">` in `app/layout.tsx`). Check `node_modules/next/dist/docs/` before using any Next API (see AGENTS.md).
 
 ## Design references
@@ -25,6 +27,7 @@ Mockups live in `refference/` (spelled that way). They are 2x exports of a **144
 - `splash.png`, then `splash-finished-circle-grow.png`: a white loader showing "LOADING..." and a percentage. When it finishes, a black circle grows from the center into the dark site.
 - `design-home.png`: the hero headline, an intro paragraph bottom-left, and the copyright. The white arrow circle and its glow are **the custom mouse cursor** (`components/cursor.tsx`, mounted in the root layout), not a button.
 - `design-home-mobile.png`: the mobile home screen, a 2x export of a **360px frame**. The headline has four lines, there is no cursor on touch devices, the copyright is hidden, and a static glow sits on the right edge.
+- `design-work-mobile-{1,2,3}.png`: the mobile work slider (360 frame). Title, panel and description stack; projects slide on the y axis, with the neighbours peeking blurred from under the navbar and the bottom bar. Also shows the **mobile bottom bar** (Home / Work / Contact), whose line and dot only mark the active section, it is not a slider.
 - `design-work.png`: a horizontal project carousel. The centered card shows the year and a screenshot; neighbouring cards are blurred. The project title and description sit below.
 - `design-contact.png`: the "MARI KOLABORASI" headline, contact links, a message form, and footer nav (HOME / PROYEK / KONTAK).
 - `*-grid.png`: the same screens with the 12-column grid overlaid. Use these to read column spans.
@@ -39,6 +42,7 @@ Copy is primarily Indonesian, and the header has an ID/language toggle.
 - **Max width:** every section is capped at **1600px** and centered.
 - **Lock at 1600px:** above a 1600px viewport, nothing grows further. Don't use raw `vw` for this. Scale from one capped unit, `--vw: min(1vw, 1rem)` (1rem = 16px = 1vw at 1600), with values like `calc(var(--vw) * 1.667)`. Use it for margins, gutters, and font sizes alike, so the layout above 1600px looks exactly like it does at 1600px.
 - **Mobile grid (below 1024px, Tailwind `lg`):** 6 columns, 8px gutter, 16px margin, defined against a 360 frame (16/360 ≈ `4.444vw`, 8/360 ≈ `2.222vw`). Values are capped with `min()`/`clamp()` in rem so tablets don't balloon. Breakpoint-dependent values (`--cols`, `--margin`, `--gutter`, `--fs-*`) live as tokens in `:root` in `globals.css` and switch at `lg`. Markup is mobile-first, with `lg:` for desktop.
-- **Section height:** every section is `min-height: calc(100svh - var(--nav-h))`, where `--nav-h` is the navbar height token. Keep the navbar height in that one token so everything else stays correct. A section's content must fit inside that height, so the whole section is visible without scrolling inside it.
+- **Section height:** every section is `min-height: var(--section-h)`, which is `100svh - var(--nav-h) - var(--bar-h)` (the top navbar, plus the mobile bottom bar; `--bar-h` is 0 on desktop). Keep those heights in their tokens so everything else stays correct. A section's content must fit inside that height, so the whole section is visible without scrolling inside it.
+- **Scroll paging:** mark every section (and every step of a pinned slider) with `data-snap`. On desktop `components/snap-scroll.tsx` moves one point per wheel gesture or key press; on mobile, CSS scroll snap does it natively.
 - **Vertical spacing:** always a multiple of **4px**. Tailwind v4's spacing unit is 4px, so stick to the default scale (`mt-5`, `py-8`, ...) and avoid arbitrary values that break it. Gaps between elements are usually multiples of **20px** (`gap-5`, `gap-10`, ...).
 - **Typography sizing:** **no `px` for text.** Font sizes (and text-related measures like line length) use `vw`, `ch`, or `clamp()` built from relative units.
