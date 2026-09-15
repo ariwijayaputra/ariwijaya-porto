@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* 1vw that stops growing past a 1600px viewport (1rem = 16px = 1vw @1600) */
+  --vw: min(1vw, 1rem);
+  --nav-h: calc(var(--spacing) * 12); /* 48px */
+  --cursor: calc(var(--vw) * 6.944); /* 100px @1440 */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* mobile (<1024px): 6-col grid on a 360 frame, capped so tablets don't balloon */
+  --cols: 6;
+  --margin: min(4.444vw, 1.5rem); /* 16px @360 */
+  --gutter: min(2.222vw, 0.75rem); /* 8px @360 */
+  --fs-body: clamp(0.75rem, 3.944vw, 1.125rem); /* 14.2px @360 */
+  --lh-body: 1.2; /* 17px @360 */
+  --fs-nav: clamp(0.75rem, 4.167vw, 1.125rem); /* 15px @360 */
+  /* 45px @360, hero wraps to 4 lines; "PENGALAMAN" (~6.9em) must fit 6 cols */
+  --fs-display: min(12.58vw, 8.5svh);
+  --lh-display: 1.02;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* desktop: 12-col grid on a 1440 frame */
+  @media (width >= 64rem) {
+    --cols: 12;
+    --margin: calc(var(--vw) * 1.6667); /* 24px @1440 */
+    --gutter: calc(var(--vw) * 1.6667); /* 24px @1440 */
+    /* 16px @1440; floor keeps small laptops readable */
+    --fs-body: max(calc(var(--vw) * 1.111), 0.875rem);
+    --lh-body: 1.125;
+    --fs-nav: max(calc(var(--vw) * 1.042), 0.875rem); /* 15px @1440 */
+    /* 132px @1440; svh cap keeps the hero inside short laptop viewports */
+    --fs-display: min(calc(var(--vw) * 9.18), 15svh);
+    --lh-display: 1.06;
   }
 }
 
+@theme inline {
+  --color-ink: #121212;
+  --color-paper: #dedede;
+  --color-dim: #ababab;
+  --color-mute: #999999;
+  --color-line: #777777;
+
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-bellefair);
+
+  --text-body: var(--fs-body);
+  --text-body--line-height: var(--lh-body);
+  --text-nav: var(--fs-nav);
+  --text-nav--line-height: 1.125;
+  --text-display: var(--fs-display);
+  --text-display--line-height: var(--lh-display);
+}
+
+/* page grid: 6 cols mobile / 12 cols desktop, capped at 1600px */
+@utility page-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  width: 100%;
+  max-width: 1600px;
+  margin-inline: auto;
+  padding-inline: var(--margin);
+}
+
+@utility glow {
+  position: absolute;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 0.1), transparent);
+}
+
+/* set by components/cursor.tsx once it's running, so no-JS keeps the native cursor */
+.custom-cursor,
+.custom-cursor * {
+  cursor: none;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
 }
