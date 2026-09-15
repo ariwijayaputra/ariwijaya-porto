@@ -46,7 +46,7 @@ export default function Hero() {
           desain yang matang, teknologi yang tepat, dan kode yang bersih.
         </p>
 
-        <p ref={copyright} className="hidden lg:col-span-4 lg:col-start-9 lg:block lg:self-end lg:text-right">
+        <p ref={copyright} className="hidden text-mute lg:col-span-4 lg:col-start-9 lg:block lg:self-end lg:text-right">
           Copyright 2026 By Ari Wijaya Putra
         </p>
       </div>

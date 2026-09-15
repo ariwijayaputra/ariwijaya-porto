@@ -32,7 +32,7 @@ export default function Navbar() {
                   aria-current={i === active ? "location" : undefined}
                   className={`flex items-center gap-2 transition-colors duration-300 hover:text-white ${i === active ? "text-white" : "text-mute"}`}
                 >
-                  <svg
+                  {/* <svg
                     aria-hidden
                     viewBox="0 0 24 24"
                     fill="none"
@@ -42,7 +42,7 @@ export default function Navbar() {
                     className="size-[1.333em]"
                   >
                     {t.icon}
-                  </svg>
+                  </svg> */}
                   {t.label}
                 </a>
               </li>

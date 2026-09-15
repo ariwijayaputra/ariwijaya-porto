@@ -35,8 +35,10 @@ export default function Work() {
   useEffect(() => {
     const onScroll = () => {
       const frame = frameRef.current!.getBoundingClientRect();
+      // a tiny viewport (e.g. devtools open) collapses --section-h to 0, and 0/0 is NaN
+      if (!frame.height) return;
       const top = sectionRef.current!.getBoundingClientRect().top;
-      const i = Math.round((frame.top - top) / frame.height);
+      const i = Math.min(projects.length - 1, Math.max(0, Math.round((frame.top - top) / frame.height)));
       setView((v) => (v.active === i ? v : { active: i, dir: Math.sign(i - v.active) }));
     };
     onScroll();

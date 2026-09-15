@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  /* 1vw that stops growing past a 1600px viewport (1rem = 16px = 1vw @1600) */
-  --vw: min(1vw, 1rem);
+  /* 1vw that stops growing past a 1920px viewport (1.2rem = 19.2px = 1vw @1920) */
+  --vw: min(1vw, 1.2rem);
   --nav-h: calc(var(--spacing) * 12); /* 48px */
   --bar-h: calc(var(--spacing) * 16); /* 64px mobile bottom bar, 0 on desktop */
   /* every section's height: the space between the top navbar and the bottom bar */
@@ -30,7 +30,7 @@
      (svh cap for tablets), neighbours peek 20px out from under the navbar / bottom bar */
   --work-pad: min(6.667vw, 2.5rem);
   --work-img-h: min(
-    (min(100cqw, 1600px) - 2 * var(--margin) - 2 * var(--work-pad)) / 1.3625,
+    (min(100cqw, 1920px) - 2 * var(--margin) - 2 * var(--work-pad)) / 1.3625,
     32svh
   );
   --work-img-w: calc(var(--work-img-h) * 1.3625);
@@ -39,17 +39,19 @@
   --work-peek: calc(var(--spacing) * 5);
   /* text reveal starts this far off, on the side the image slides in from (--reveal-dir) */
   --reveal-shift: calc(var(--spacing) * 2.5); /* 10px */
-  /* inner edge of the outermost column, from the screen edge; frozen past 1600 so
+  /* inner edge of the outermost column, from the screen edge; frozen past 1920 so
      neighbours stay cropped by the screen. cqw resolves against <main> */
   --work-edge: calc(
     var(--margin) +
-      (min(100cqw, 1600px) - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) /
+      (min(100cqw, 1920px) - 2 * var(--margin) - (var(--cols) - 1) * var(--gutter)) /
       var(--cols)
   );
 
   /* desktop: 12-col grid on a 1440 frame */
   @media (width >= 64rem) {
     --cols: 12;
+    /* Tailwind's spacing unit: 4px up to the 1440 frame, then grows with it (5.33px @1920) */
+    --spacing: max(0.25rem, calc(var(--vw) * 0.2778));
     --margin: calc(var(--vw) * 1.6667); /* 24px @1440 */
     --gutter: calc(var(--vw) * 1.6667); /* 24px @1440 */
     /* 16px @1440; floor keeps small laptops readable */
@@ -112,13 +114,13 @@
   }
 }
 
-/* page grid: 6 cols mobile / 12 cols desktop, capped at 1600px */
+/* page grid: 6 cols mobile / 12 cols desktop, capped at 1920px */
 @utility page-grid {
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--gutter);
   width: 100%;
-  max-width: 1600px;
+  max-width: 1920px;
   margin-inline: auto;
   padding-inline: var(--margin);
 }
