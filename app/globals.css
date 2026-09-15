@@ -7,7 +7,7 @@
   --bar-h: calc(var(--spacing) * 16); /* 64px mobile bottom bar, 0 on desktop */
   /* every section's height: the space between the top navbar and the bottom bar */
   --section-h: calc(100svh - var(--nav-h) - var(--bar-h));
-  --cursor: calc(var(--vw) * 6.944); /* 100px @1440 */
+  --cursor: calc(var(--vw) * 4.4); /* 100px @1440 */
 
   /* mobile (<1024px): 6-col grid on a 360 frame, capped so tablets don't balloon */
   --cols: 6;
