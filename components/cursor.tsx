@@ -39,12 +39,20 @@ export default function Cursor() {
       }
     };
     const leave = () => (el.style.opacity = "0");
+    // grow into the arrow circle over anything clickable
+    const over = (e: PointerEvent) =>
+      el.toggleAttribute(
+        "data-hover",
+        !!(e.target as Element).closest?.("a, button, label, select, summary, input, textarea, [role=button]"),
+      );
 
     window.addEventListener("pointermove", move);
+    window.addEventListener("pointerover", over);
     root.addEventListener("mouseleave", leave);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerover", over);
       root.removeEventListener("mouseleave", leave);
       root.classList.remove("custom-cursor");
     };
@@ -54,17 +62,17 @@ export default function Cursor() {
     <div
       ref={ref}
       aria-hidden
-      className="pointer-events-none fixed top-0 left-0 z-50 hidden opacity-0 transition-opacity duration-300 pointer-fine:block"
+      className="group pointer-events-none fixed top-0 left-0 z-50 hidden opacity-0 transition-opacity duration-300 pointer-fine:block"
     >
       <div className="relative -translate-1/2">
-        <div className="glow top-1/2 left-1/2 size-[500%] -translate-1/2" />
-        <div className="relative grid size-(--cursor) place-items-center rounded-full bg-neutral-50 text-ink">
+        <div className="glow top-1/2 left-1/2 size-[calc(var(--cursor)*5)] -translate-1/2" />
+        <div className="relative grid size-8 place-items-center rounded-full border-4 border-neutral-50 text-ink transition-[width,height,background-color] duration-300 ease-out group-data-hover:size-(--cursor) group-data-hover:bg-neutral-50">
           <svg
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth={2.75}
-            className="w-[36%]"
+            className="w-[36%] opacity-0 transition-opacity duration-300 group-data-hover:opacity-100"
           >
             <path d="M19 19 5 5M5 17V5h12" />
           </svg>
