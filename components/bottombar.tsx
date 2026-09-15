@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { activeSection } from "@/components/snap-scroll";
 
 export const tabs = [
   { id: "home", label: "Home", icon: <path d="M3.5 10 12 3l8.5 7v11h-17zM9.5 21v-6h5v6" /> },
@@ -14,19 +15,11 @@ export const tabs = [
 const justify = ["justify-self-start", "justify-self-center", "justify-self-end"];
 const ease = "transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none";
 
-// Index of the last section whose top has passed the middle of the screen.
+// Tab index of activeSection(), so a jump highlights its destination, not what it passes.
 export function useActiveSection() {
   const [active, setActive] = useState(0);
   useEffect(() => {
-    const update = () =>
-      setActive(
-        Math.max(
-          0,
-          tabs.findLastIndex(
-            (t) => (document.getElementById(t.id)?.getBoundingClientRect().top ?? Infinity) <= innerHeight / 2,
-          ),
-        ),
-      );
+    const update = () => setActive(Math.max(0, tabs.findIndex((t) => t.id === activeSection()?.id)));
     update();
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);

@@ -149,6 +149,16 @@
   }
 }
 
+/* sections other than activeSection() (components/snap-scroll.tsx) fade out, so a jump
+   from home to contact never shows the work slider it scrolls past. Opacity only:
+   a transform would shift the [data-snap] points mid-tween */
+main > section {
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+main > section[data-away] {
+  opacity: 0;
+}
+
 /* set by components/cursor.tsx once it's running, so no-JS keeps the native cursor */
 .custom-cursor,
 .custom-cursor * {

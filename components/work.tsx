@@ -102,12 +102,11 @@ export default function Work() {
                   tabIndex={Math.abs(offset) === 1 ? 0 : -1}
                   aria-hidden={far}
                   aria-label={offset ? `Lihat proyek ${p.title}` : p.title}
-                  className="work-slide relative col-start-1 row-start-1 transition-[transform,filter,opacity] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                  className="work-slide relative col-start-1 row-start-1 transition-[transform,opacity] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                   style={
                     {
                       "--o": offset,
                       "--k": offset ? "var(--work-side)" : 1,
-                      filter: `blur(${offset ? "var(--work-blur)" : "0px"})`,
                       opacity: far ? 0 : 1,
                       zIndex: offset ? 0 : 1,
                     } as CSSProperties
@@ -121,12 +120,23 @@ export default function Work() {
                       transitionDelay: offset ? "0ms" : "300ms",
                     }}
                   />
+                  {/* the blur is a static copy crossfaded on opacity: Chrome won't run an animated
+                      blur on the compositor, so phones dropped its frames and it popped at the end */}
                   <Image
                     src={p.image}
                     alt=""
                     sizes="(min-width: 1024px) 48vw, 100vw"
                     placeholder="blur"
-                    className="block size-full"
+                    className="block size-full transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                    style={{ opacity: offset ? 0 : 1 }}
+                  />
+                  <Image
+                    src={p.image}
+                    alt=""
+                    aria-hidden
+                    sizes="(min-width: 1024px) 48vw, 100vw"
+                    className="absolute inset-0 size-full blur-(--work-blur) transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                    style={{ opacity: offset ? 1 : 0 }}
                   />
                 </button>
               );
