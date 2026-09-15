@@ -1,11 +1,38 @@
+"use client";
+
+import { tabs, useActiveSection } from "@/components/bottombar";
+
 export default function Navbar() {
+  const active = useActiveSection();
+
   return (
     <header className="sticky top-0 z-10 bg-ink">
       <nav className="page-grid h-(--nav-h) text-nav">
         <div className="col-span-full grid grid-cols-subgrid items-center border-b border-line">
-          <p className="hidden font-light text-mute lg:col-span-4 lg:block">
-            Professional Web Developer
-          </p>
+          <ul className="hidden gap-10 font-light lg:col-span-4 lg:flex">
+            {tabs.map((t, i) => (
+              <li key={t.id}>
+                <a
+                  href={`#${t.id}`}
+                  aria-current={i === active ? "location" : undefined}
+                  className={`flex items-center gap-2 transition-colors duration-300 hover:text-white ${i === active ? "text-white" : "text-mute"}`}
+                >
+                  <svg
+                    aria-hidden
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.75}
+                    strokeLinejoin="round"
+                    className="size-[1.333em]"
+                  >
+                    {t.icon}
+                  </svg>
+                  {t.label}
+                </a>
+              </li>
+            ))}
+          </ul>
           <p className="col-span-3 font-display text-white uppercase lg:col-span-4 lg:text-center">
             Ari Wijaya Putra
           </p>

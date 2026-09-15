@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// ponytail: #contact has no section yet, so that tab never activates
-const tabs = [
+export const tabs = [
   { id: "home", label: "Home", icon: <path d="M3.5 10 12 3l8.5 7v11h-17zM9.5 21v-6h5v6" /> },
   {
     id: "work",
@@ -15,29 +14,19 @@ const tabs = [
 const justify = ["justify-self-start", "justify-self-center", "justify-self-end"];
 const ease = "transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none";
 
-// Mobile navigation. The line and dot only mirror the section in view; they aren't a slider.
-export default function Bottombar() {
+// Index of the last section whose top has passed the middle of the screen.
+export function useActiveSection() {
   const [active, setActive] = useState(0);
-  const rowRef = useRef<HTMLDivElement>(null);
-  const fillRef = useRef<HTMLDivElement>(null);
-  const dotRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const update = () => {
-      // the last section whose top has passed the middle of the screen
-      const i = Math.max(
-        0,
-        tabs.findLastIndex(
-          (t) => (document.getElementById(t.id)?.getBoundingClientRect().top ?? Infinity) <= innerHeight / 2,
+    const update = () =>
+      setActive(
+        Math.max(
+          0,
+          tabs.findLastIndex(
+            (t) => (document.getElementById(t.id)?.getBoundingClientRect().top ?? Infinity) <= innerHeight / 2,
+          ),
         ),
       );
-      setActive(i);
-      const row = rowRef.current!;
-      const tab = row.children[i] as HTMLElement;
-      const x = tab.offsetLeft + tab.offsetWidth / 2;
-      fillRef.current!.style.transform = `scaleX(${x / row.offsetWidth})`;
-      dotRef.current!.style.transform = `translateX(${x}px)`;
-    };
     update();
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
@@ -46,6 +35,28 @@ export default function Bottombar() {
       window.removeEventListener("resize", update);
     };
   }, []);
+  return active;
+}
+
+// Mobile navigation. The line and dot only mirror the section in view; they aren't a slider.
+export default function Bottombar() {
+  const active = useActiveSection();
+  const rowRef = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const place = () => {
+      const row = rowRef.current!;
+      const tab = row.children[active] as HTMLElement;
+      const x = tab.offsetLeft + tab.offsetWidth / 2;
+      fillRef.current!.style.transform = `scaleX(${x / row.offsetWidth})`;
+      dotRef.current!.style.transform = `translateX(${x}px)`;
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [active]);
 
   return (
     <nav aria-label="Navigasi" className="page-grid sticky bottom-0 z-10 h-(--bar-h) bg-ink text-small lg:hidden">
