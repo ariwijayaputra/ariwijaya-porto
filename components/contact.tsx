@@ -11,8 +11,8 @@ const links = [
     ),
   },
   {
-    label: "aryanatha@gmail.com",
-    href: "mailto:aryanatha@gmail.com",
+    label: "aryanathaa@gmail.com",
+    href: "mailto:aryanathaa@gmail.com",
     icon: <path d="M2.5 5h19v14h-19zm0 0 9.5 8 9.5-8" />,
   },
   {
@@ -79,7 +79,7 @@ export default function Contact() {
       {/* ponytail: native mailto form, no backend; swap for an API route if a mail client isn't enough.
           GET + mailto sends the fields as ?subject=&body= (spec encodes spaces as %20) */}
       <form
-        action="mailto:aryanatha@gmail.com"
+        action="mailto:aryanathaa@gmail.com"
         method="get"
         className="col-span-full row-start-3 -mr-(--margin) mt-10 flex flex-col gap-5 bg-panel px-(--contact-pad) py-8 text-nav lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:py-16"
       >
