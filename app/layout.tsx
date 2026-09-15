@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bellefair, DM_Sans } from "next/font/google";
 import Cursor from "@/components/cursor";
+import Splash from "@/components/splash";
 import "./globals.css";
 
 const bellefair = Bellefair({
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         {children}
         <Cursor />
+        <Splash />
       </body>
     </html>
   );

@@ -1,14 +1,29 @@
 "use client";
 
+import gsap from "gsap";
+import { useRef } from "react";
 import { tabs, useActiveSection } from "@/components/bottombar";
+import { blurIn, useReveal } from "@/components/splash";
 
 export default function Navbar() {
   const active = useActiveSection();
+  const bar = useRef<HTMLDivElement>(null);
+
+  // once the splash is gone, the items float in left to right and the line fades in
+  useReveal(() => {
+    const el = bar.current!;
+    // the line's own colour at alpha 0: plain "transparent" is black and fades in through a lighter grey
+    const clear = getComputedStyle(el).borderBottomColor.replace("rgb(", "rgba(").replace(")", ", 0)");
+    return gsap
+      .timeline()
+      .add(blurIn(el.querySelectorAll("li, p"), { stagger: 0.1 }))
+      .from(el, { borderBottomColor: clear, duration: 1.6, clearProps: "borderBottomColor" }, 0);
+  });
 
   return (
     <header className="sticky top-0 z-10 bg-ink">
       <nav className="page-grid h-(--nav-h) text-nav">
-        <div className="col-span-full grid grid-cols-subgrid items-center border-b border-line">
+        <div ref={bar} className="col-span-full grid grid-cols-subgrid items-center border-b border-line">
           <ul className="hidden gap-10 font-light lg:col-span-4 lg:flex">
             {tabs.map((t, i) => (
               <li key={t.id}>

@@ -1,7 +1,9 @@
 "use client";
 
+import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
 import { activeSection } from "@/components/snap-scroll";
+import { blurIn, useReveal } from "@/components/splash";
 
 export const tabs = [
   { id: "home", label: "Home", icon: <path d="M3.5 10 12 3l8.5 7v11h-17zM9.5 21v-6h5v6" /> },
@@ -37,6 +39,20 @@ export default function Bottombar() {
   const rowRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+
+  // once the splash is gone, the tabs float in left to right and the line and dot fade in.
+  // Opacity only on those: place() owns their transforms
+  useReveal(() => {
+    const row = rowRef.current!;
+    return gsap
+      .timeline()
+      .add(blurIn(row.children, { stagger: 0.1 }))
+      .from(
+        row.parentElement!.querySelectorAll(":scope > [aria-hidden]"),
+        { autoAlpha: 0, duration: 1.6, clearProps: "opacity,visibility" },
+        0,
+      );
+  });
 
   useEffect(() => {
     const place = () => {

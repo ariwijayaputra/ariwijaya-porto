@@ -159,6 +159,11 @@ main > section[data-away] {
   opacity: 0;
 }
 
+/* components/splash.tsx holds the page at the top while it's mounted */
+html:has([data-splash]) {
+  overflow: hidden;
+}
+
 /* set by components/cursor.tsx once it's running, so no-JS keeps the native cursor */
 .custom-cursor,
 .custom-cursor * {

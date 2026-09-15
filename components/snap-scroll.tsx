@@ -64,6 +64,7 @@ export default function SnapScroll() {
     let lastWheel = 0;
 
     const step = (dir: number) => {
+      if (document.querySelector("[data-splash]")) return; // components/splash.tsx still up
       const y = window.scrollY;
       const p = pad();
       const points = [...document.querySelectorAll("[data-snap]")].map((el) =>

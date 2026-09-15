@@ -1,3 +1,10 @@
+"use client";
+
+import gsap from "gsap";
+import { useRef } from "react";
+import { tabs, useActiveSection } from "@/components/bottombar";
+import { blurIn, useReveal } from "@/components/splash";
+
 const links = [
   {
     label: "ariwijayaputra",
@@ -33,8 +40,27 @@ const nav = [
 // mobile stacks headline / text / form / links / copyright (rows placed explicitly, the
 // left column is display:contents there); desktop puts text + links left, form right
 export default function Contact() {
+  const root = useRef<HTMLElement>(null);
+  const active = tabs[useActiveSection()].id === "contact";
+
+  // replays on every visit (leaving already fades the section out, see main > section[data-away]):
+  // headline word by word, intro line by line, then the form, links and footer
+  useReveal((split) => {
+    const el = root.current!;
+    const words = split(el.querySelector("h2")!, { type: "words" });
+    const lines = split(el.querySelector("p")!, { type: "lines" });
+    return gsap
+      .timeline()
+      .add(blurIn(words.words, { duration: 1.8, stagger: 0.12 }))
+      .add(blurIn(lines.lines, { stagger: 0.12 }), "<0.5")
+      .add(blurIn(el.querySelector("form"), {}, { yPercent: 10 }), "<0.2") // a tall panel rises less
+      .add(blurIn(el.querySelectorAll("address a"), { stagger: 0.1 }), "<0.3")
+      .add(blurIn(el.querySelectorAll("footer a, footer p"), { stagger: 0.1 }), "<0.3");
+  }, active);
+
   return (
     <section
+      ref={root}
       id="contact"
       data-snap
       className="page-grid min-h-(--section-h) grid-rows-[auto_auto_1fr_auto_auto] pt-9 pb-5 text-body lg:grid-rows-[auto_1fr_auto] lg:pt-14 lg:pb-6"

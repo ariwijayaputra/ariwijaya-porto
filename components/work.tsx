@@ -126,6 +126,7 @@ export default function Work() {
                     src={p.image}
                     alt=""
                     sizes="(min-width: 1024px) 48vw, 100vw"
+                    loading="eager"
                     placeholder="blur"
                     className="block size-full transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                     style={{ opacity: offset ? 0 : 1 }}
@@ -135,6 +136,7 @@ export default function Work() {
                     alt=""
                     aria-hidden
                     sizes="(min-width: 1024px) 48vw, 100vw"
+                    loading="eager"
                     className="absolute inset-0 size-full blur-(--work-blur) transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                     style={{ opacity: offset ? 1 : 0 }}
                   />
