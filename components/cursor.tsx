@@ -39,12 +39,11 @@ export default function Cursor() {
       }
     };
     const leave = () => (el.style.opacity = "0");
-    // grow into the arrow circle over anything clickable
-    const over = (e: PointerEvent) =>
-      el.toggleAttribute(
-        "data-hover",
-        !!(e.target as Element).closest?.("a, button, label, select, summary, input, textarea, [role=button]"),
-      );
+    // grow into the arrow circle over anything clickable, unless it opts out with data-no-hover
+    const over = (e: PointerEvent) => {
+      const hit = (e.target as Element).closest?.("a, button, label, select, summary, input, textarea, [role=button]");
+      el.toggleAttribute("data-hover", !!hit && !hit.hasAttribute("data-no-hover"));
+    };
 
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerover", over);

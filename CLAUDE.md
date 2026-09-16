@@ -25,7 +25,7 @@ Next 16 differs from older versions (for example, the typed global `LayoutProps<
 
 Mockups live in `refference/` (spelled that way). They are 2x exports of a **1440px desktop frame**:
 - `splash.png`, then `splash-finished-circle-grow.png`: a white loader showing "LOADING..." and a percentage. When it finishes, a black circle grows from the center into the dark site.
-- `design-home.png`: the hero headline, an intro paragraph bottom-left, and the copyright. The white arrow circle and its glow are **the custom mouse cursor** (`components/cursor.tsx`, mounted in the root layout), not a button.
+- `design-home.png`: the hero headline, an intro paragraph bottom-left, and the copyright. The white arrow circle and its glow are **the custom mouse cursor** (`components/cursor.tsx`, mounted in `app/page.tsx`), not a button.
 - `design-home-mobile.png`: the mobile home screen, a 2x export of a **360px frame**. The headline has four lines, there is no cursor on touch devices, the copyright is hidden, and a static glow sits on the right edge.
 - `design-work-mobile-{1,2,3}.png`: the mobile work slider (360 frame). Title, panel and description stack; projects slide on the y axis, with the neighbours peeking blurred from under the navbar and the bottom bar. Also shows the **mobile bottom bar** (Home / Work / Contact), whose line and dot only mark the active section, it is not a slider.
 - `design-work.png`: a horizontal project carousel. The centered card shows the year and a screenshot; neighbouring cards are blurred. The project title and description sit below.

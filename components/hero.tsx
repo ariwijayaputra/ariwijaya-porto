@@ -42,22 +42,22 @@ export default function Hero() {
         {en ? (
           <p key="en" ref={intro} className="col-span-4 self-end lg:max-w-[32ch]">
             <span className="text-dim">
-              I’m a software engineer focused on turning complex ideas into
-              simple digital experiences.
+              I design and build websites from start to finish, combining
+              UI/UX design with coding so nothing gets lost between idea and
+              final product.
             </span>{" "}
-            From designing interfaces to building the systems behind them, I
-            enjoy solving problems with thoughtful design, practical
-            technology, and clean code.
+            Every layout is built around how users think, with clean,
+            responsive code for any device.
           </p>
         ) : (
           <p key="id" ref={intro} className="col-span-4 self-end lg:max-w-[32ch]">
             <span className="text-dim">
-              Saya adalah software engineer yang senang mengubah ide kompleks
-              menjadi pengalaman yang sederhana.
+              Saya merancang dan membangun website dari awal hingga akhir,
+              menggabungkan desain UI/UX dengan coding agar tidak ada yang
+              hilang antara ide dan hasil akhir.
             </span>{" "}
-            Saya mampu mengerjakan berbagai hal, mulai dari merancang
-            antarmuka hingga membangun sistem di baliknya, dengan memadukan
-            desain yang matang, teknologi yang tepat, dan kode yang bersih.
+            Setiap tampilan dirancang sesuai cara pengguna berpikir, dengan
+            kode yang rapi dan responsif di berbagai perangkat.
           </p>
         )}
 

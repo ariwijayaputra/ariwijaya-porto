@@ -4,26 +4,17 @@ import Image from "next/image";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { useLang } from "@/components/lang";
 import { scrollToY } from "@/components/snap-scroll";
-import clears from "@/public/img/sample-clears-studio.png";
-import daru from "@/public/img/sample-daru-invitation.png";
-import komi from "@/public/img/sample-komi-design-studio.png";
-import longevity from "@/public/img/sample-longevity.png";
-import pkb from "@/public/img/sample-pesta-kesenian-bali.png";
-import studioKo from "@/public/img/sample-studio-ko.png";
 
-// ponytail: placeholder copy, swap in real project data (or a CMS) later
-const lorem =
-  "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore Et Dolore Magna Aliqua. Ut Enim Ad Minim Veniam, Quis Nostrud.";
-const projects = [
-  { title: "Clears Studio", image: clears },
-  { title: "Pesta Kesenian Bali", image: pkb },
-  { title: "Komi Design Studio", image: komi },
-  { title: "Studio KO", image: studioKo },
-  { title: "Longevity", image: longevity },
-  { title: "Daru Invitation", image: daru },
-];
+// shape of PROJECTS_QUERY in app/page.tsx
+export type Project = {
+  _id: string;
+  title: string;
+  description: { id: string; en: string };
+  url: string | null;
+  image: { url: string; lqip: string; width: number; height: number };
+};
 
-export default function Work() {
+export default function Work({ projects }: { projects: Project[] }) {
   // dir: +1 moving to the next project (it rises from below), -1 back to the previous one
   const [{ active, dir }, setView] = useState({ active: 0, dir: 1 });
   const sectionRef = useRef<HTMLElement>(null);
@@ -40,7 +31,7 @@ export default function Work() {
       // a tiny viewport (e.g. devtools open) collapses --section-h to 0, and 0/0 is NaN
       if (!frame.height) return;
       const top = sectionRef.current!.getBoundingClientRect().top;
-      const i = Math.min(projects.length - 1, Math.max(0, Math.round((frame.top - top) / frame.height)));
+      const i = Math.min(n - 1, Math.max(0, Math.round((frame.top - top) / frame.height)));
       setView((v) => (v.active === i ? v : { active: i, dir: Math.sign(i - v.active) }));
     };
     onScroll();
@@ -50,7 +41,7 @@ export default function Work() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [n]);
 
   const goTo = (offset: number) =>
     scrollToY(window.scrollY + offset * frameRef.current!.offsetHeight);
@@ -66,7 +57,7 @@ export default function Work() {
           sized, because CSS snap (mobile) ignores empty snap areas */}
       {projects.map((p, i) => (
         <div
-          key={p.title}
+          key={p._id}
           aria-hidden
           data-snap
           className="absolute inset-x-0 h-(--section-h)"
@@ -87,7 +78,13 @@ export default function Work() {
             key={active}
             className="font-display text-title uppercase motion-safe:animate-reveal"
           >
-            {project.title}
+            {project.url ? (
+              <a href={project.url} target="_blank" rel="noreferrer">
+                {project.title}
+              </a>
+            ) : (
+              project.title
+            )}
           </h2>
         </div>
 
@@ -100,12 +97,24 @@ export default function Work() {
               const far = Math.abs(offset) > 1;
               return (
                 <button
-                  key={p.title}
+                  key={p._id}
                   type="button"
-                  onClick={() => goTo(offset)}
+                  // ponytail: stays a <button> so the slide keeps its DOM node (and transition);
+                  // the title is the real <a> for keyboard and middle-click
+                  onClick={() =>
+                    offset ? goTo(offset) : p.url && window.open(p.url, "_blank", "noopener")
+                  }
                   tabIndex={Math.abs(offset) === 1 ? 0 : -1}
+                  // the active slide without a url does nothing on click
+                  data-no-hover={offset || p.url ? undefined : ""}
                   aria-hidden={far}
-                  aria-label={offset ? `${en ? "View project" : "Lihat proyek"} ${p.title}` : p.title}
+                  aria-label={
+                    offset
+                      ? `${en ? "View project" : "Lihat proyek"} ${p.title}`
+                      : p.url
+                        ? `${en ? "Visit" : "Kunjungi"} ${p.title}`
+                        : p.title
+                  }
                   className="work-slide relative col-start-1 row-start-1 transition-[transform,opacity] duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                   style={
                     {
@@ -127,16 +136,21 @@ export default function Work() {
                   {/* the blur is a static copy crossfaded on opacity: Chrome won't run an animated
                       blur on the compositor, so phones dropped its frames and it popped at the end */}
                   <Image
-                    src={p.image}
+                    src={p.image.url}
+                    width={p.image.width}
+                    height={p.image.height}
                     alt=""
                     sizes="(min-width: 1024px) 48vw, 100vw"
                     loading="eager"
                     placeholder="blur"
+                    blurDataURL={p.image.lqip}
                     className="block size-full transition-opacity duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
                     style={{ opacity: offset ? 0 : 1 }}
                   />
                   <Image
-                    src={p.image}
+                    src={p.image.url}
+                    width={p.image.width}
+                    height={p.image.height}
                     alt=""
                     aria-hidden
                     sizes="(min-width: 1024px) 48vw, 100vw"
@@ -152,7 +166,7 @@ export default function Work() {
 
         <div className="col-span-5 self-start pt-5 lg:col-start-8 lg:row-start-2 lg:self-end lg:pt-0">
           <p key={active} className="motion-safe:animate-reveal">
-            {lorem}
+            {project.description[en ? "en" : "id"]}
           </p>
         </div>
       </div>
