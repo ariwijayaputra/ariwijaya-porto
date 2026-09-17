@@ -6,13 +6,22 @@ import { tabs, useActiveSection } from "@/components/bottombar";
 import { useLang } from "@/components/lang";
 import { blurIn, useReveal } from "@/components/splash";
 
-const links = [
-  {
-    label: "aryanathaa@gmail.com",
-    href: "mailto:aryanathaa@gmail.com",
-    icon: <path d="M2.5 5h19v14h-19zm0 0 9.5 8 9.5-8" />,
-  },
-];
+function getLinks(en: boolean) {
+  return [
+    {
+      label: "aryanathaa@gmail.com",
+      href: "mailto:aryanathaa@gmail.com",
+      icon: <path d="M2.5 5h19v14h-19zm0 0 9.5 8 9.5-8" />,
+    },
+    {
+      label: en ? "View CV" : "Lihat CV",
+      href: "/cv",
+      icon: (
+        <path d="M6 2.5h8l4 4v15h-12zM14 2.5v4h4M9 12h6M9 15.5h6M9 8.5h3" />
+      ),
+    },
+  ];
+}
 
 const nav = [
   { id: "home", label: "Home", en: "Home" },
@@ -62,7 +71,7 @@ export default function Contact() {
         </p>
 
         <address className="col-span-full row-start-4 mt-10 flex flex-col items-start gap-5 text-link text-dim not-italic lg:gap-6 lg:text-paper">
-          {links.map((l) => (
+          {getLinks(en).map((l) => (
             <a
               key={l.href}
               href={l.href}

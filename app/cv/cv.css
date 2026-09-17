@@ -1,0 +1,86 @@
+/* Ported from the CV design (refference), scoped under .cv-doc so it never
+   touches the rest of the site's design system. Units stay in pt on purpose:
+   this is a printable one-pager sized to match the Figma export. */
+.cv-doc {
+  --ink: #000;
+  --text: #1a1a1a;
+  --pad: 35pt;
+  /* flow-root: a plain block would let .page's top margin collapse through and
+     show the site's black body background above the gray backdrop */
+  display: flow-root;
+  min-height: 100svh;
+  background: #e5e5e5;
+  font-family: var(--font-dm-sans), Arial, Helvetica, sans-serif;
+  color: var(--text);
+  font-size: 9pt;
+  line-height: 13pt;
+  letter-spacing: -0.01em;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.cv-doc .page {
+  /* fixed 595pt page, scaled down as a whole (zoom, not a narrower width) so it
+     never reflows on small screens; 595pt = 793.33px */
+  width: 595pt;
+  zoom: min(1, calc(100vw / 1px / 793.333));
+  margin: 20px auto;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+.cv-doc a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 1.5pt;
+}
+
+.cv-doc header {
+  background: var(--ink);
+  color: #fff;
+  padding: 12pt var(--pad) 12pt;
+}
+.cv-doc header h1 { font-size: 18pt; line-height: 24pt; font-weight: 500; }
+.cv-doc header .role { font-size: 12pt; line-height: 16pt; font-weight: 400; margin-top: 5pt; }
+.cv-doc .contact { display: flex; flex-wrap: wrap; align-items: center; font-size: 10pt; line-height: 14pt; margin-top: 6pt; }
+.cv-doc .contact span + span { border-left: 1pt solid #fff; margin-left: 7pt; padding-left: 7pt; }
+
+.cv-doc main { padding: 0 var(--pad); flex: 1; }
+.cv-doc section { border-bottom: 1.2pt solid var(--ink); padding: 9pt 0 8pt; }
+.cv-doc section.last { border-bottom: none; }
+.cv-doc h2 { font-size: 12pt; line-height: 16pt; font-weight: 400; color: var(--ink); margin-bottom: 5pt; }
+.cv-doc p b, .cv-doc p a { font-weight: 700; }
+
+.cv-doc .sites { list-style: none; padding-left: 0; }
+.cv-doc .sites li { display: flex; line-height: 18pt; }
+.cv-doc .sites li::before { content: "•"; flex: none; width: 10pt; font-size: 8pt; }
+.cv-doc .sites li span { margin-left: auto; }
+
+.cv-doc .bullets { list-style: disc outside; padding-left: 10pt; margin-top: 5pt; }
+.cv-doc .bullets li { line-height: 13pt; }
+.cv-doc .bullets li::marker { font-size: 8pt; }
+
+.cv-doc .entry + .entry { margin-top: 7pt; }
+.cv-doc .entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8pt; }
+.cv-doc .entry-head .title { font-weight: 600; color: var(--ink); }
+.cv-doc .entry-head .date { font-weight: 600; color: var(--ink); white-space: nowrap; }
+.cv-doc .sub { margin-top: 1pt; }
+
+.cv-doc footer {
+  height: 22pt;
+  flex: none;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 7pt;
+}
+.cv-doc footer .contact { font-size: 7pt; margin: 0; }
+.cv-doc footer .contact span + span { margin-left: 6pt; padding-left: 6pt; }
+
+@media print {
+  .cv-doc { background: #fff; }
+  .cv-doc .page { margin: 0; zoom: 1; box-shadow: none; height: 1171pt; }
+}
