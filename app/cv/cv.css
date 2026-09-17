@@ -80,7 +80,26 @@
 .cv-doc footer .contact { font-size: 7pt; margin: 0; }
 .cv-doc footer .contact span + span { margin-left: 6pt; padding-left: 6pt; }
 
+.cv-download-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  padding: 10px 18px;
+  background: #000;
+  color: #fff;
+  font-family: var(--font-dm-sans), Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.cv-download-btn:hover { opacity: 0.85; }
+
 @media print {
+  @page { size: 595pt 1171pt; margin: 0; }
   .cv-doc { background: #fff; }
   .cv-doc .page { margin: 0; zoom: 1; box-shadow: none; height: 1171pt; }
+  .cv-download-btn { display: none; }
 }

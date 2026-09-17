@@ -2,6 +2,7 @@ import { defineQuery } from "next-sanity";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { client } from "@/sanity/lib/client";
+import { DownloadButton } from "./download-button";
 import "./cv.css";
 
 export const revalidate = 60;
@@ -46,6 +47,7 @@ export default async function CvPage() {
 
   return (
     <div className="cv-doc">
+      <DownloadButton />
       <div className="page">
         <header>
           <h1>{cv.name}</h1>
