@@ -7,20 +7,24 @@ import "./cv.css";
 
 export const revalidate = 60;
 
-type Site = { url: string; stack: string };
-type Job = { company: string; role: string; dateRange: string; bullets: string[] };
-type Education = { school: string; degree: string; dateRange: string; bullets: string[] };
-type Certification = { title: string; url: string | null; issuer: string; credential: string | null; year: string };
-type Achievement = { title: string; url: string | null; subtitle: string; year: string };
+type Lang = "id" | "en";
+type Loc = Record<Lang, string>;
+type LocList = Record<Lang, string[]>;
+
+type Site = { _key: string; url: string; stack: string };
+type Job = { _key: string; company: string; role: Loc; dateRange: Loc; bullets: LocList };
+type Education = { _key: string; school: string; degree: Loc; dateRange: Loc; bullets: LocList };
+type Certification = { _key: string; title: string; url: string | null; issuer: string; credential: string | null; year: string };
+type Achievement = { _key: string; title: Loc; url: string | null; subtitle: Loc; year: string };
 
 type Cv = {
   name: string;
-  role: string;
+  role: Loc;
   location: string;
   phone: string;
   email: string;
   portfolioUrl: string;
-  summary: string;
+  summary: Loc;
   liveWebsites: Site[];
   experience: Job[];
   education: Education[];
@@ -33,47 +37,94 @@ const CV_QUERY = defineQuery(`*[_type == "cv"][0]{
   liveWebsites, experience, education, certifications, achievements
 }`);
 
-export const metadata: Metadata = {
-  title: "CV — Ari Wijaya Putra",
-};
+// Indonesian is the default; ?lang=en serves the English CV.
+const LABELS = {
+  id: {
+    summary: "Ringkasan",
+    sites: "Situs Langsung",
+    experience: "Pengalaman",
+    education: "Pendidikan",
+    certification: "Sertifikasi",
+    achievement: "Penghargaan",
+    credential: "Kredensial",
+    portfolio: "portofolio",
+    download: "Unduh PDF",
+    downloadAria: "Unduh CV sebagai PDF",
+  },
+  en: {
+    summary: "Summary",
+    sites: "Live Websites",
+    experience: "Experience",
+    education: "Education",
+    certification: "Certification",
+    achievement: "Achievement",
+    credential: "Credential",
+    portfolio: "portfolio",
+    download: "Download PDF",
+    downloadAria: "Download CV as PDF",
+  },
+} satisfies Record<Lang, Record<string, string>>;
+
+function readParams(q: Awaited<PageProps<"/cv">["searchParams"]>) {
+  const lang: Lang = q.lang === "en" ? "en" : "id";
+  const role = Array.isArray(q.role) ? q.role[0] : q.role;
+  return { lang, role: role?.trim() || null };
+}
 
 function portfolioLabel(url: string) {
   return url.replace(/^https?:\/\//, "");
 }
 
-export default async function CvPage() {
+// The printed PDF takes its filename from the document title, so the shared
+// ?role= link downloads as e.g. "CV - Ari Wijaya Putra - Web Developer".
+export async function generateMetadata(props: PageProps<"/cv">): Promise<Metadata> {
+  const { lang, role } = readParams(await props.searchParams);
+  const cv = await client.fetch<Cv | null>(CV_QUERY);
+  const title = ["CV", cv?.name ?? "Ari Wijaya Putra", role ?? cv?.role[lang]].filter(Boolean).join(" - ");
+  return { title };
+}
+
+export default async function CvPage(props: PageProps<"/cv">) {
+  const { lang, role } = readParams(await props.searchParams);
   const cv = await client.fetch<Cv | null>(CV_QUERY);
   if (!cv) notFound();
 
+  const t = LABELS[lang];
+  // one role, two places: the headline and the {role} placeholder in the summary
+  const headlineRole = role ?? cv.role[lang];
+  const contact = (
+    <div className="contact">
+      <span>{cv.location}</span>
+      <span>{cv.phone}</span>
+      <span>{cv.email}</span>
+      <span>
+        {t.portfolio}: <a href={cv.portfolioUrl}>{portfolioLabel(cv.portfolioUrl)}</a>
+      </span>
+    </div>
+  );
+
   return (
-    <div className="cv-doc">
-      <DownloadButton />
+    <div className="cv-doc" lang={lang}>
+      <DownloadButton label={t.download} ariaLabel={t.downloadAria} />
       <div className="page">
         <header>
           <h1>{cv.name}</h1>
-          <div className="role">{cv.role}</div>
-          <div className="contact">
-            <span>{cv.location}</span>
-            <span>{cv.phone}</span>
-            <span>{cv.email}</span>
-            <span>
-              portfolio: <a href={cv.portfolioUrl}>{portfolioLabel(cv.portfolioUrl)}</a>
-            </span>
-          </div>
+          <div className="role">{headlineRole}</div>
+          {contact}
         </header>
 
         <main>
           <section>
-            <h2>Summary</h2>
-            <p>{cv.summary}</p>
+            <h2>{t.summary}</h2>
+            <p>{cv.summary[lang].replaceAll("{role}", headlineRole)}</p>
           </section>
 
           {cv.liveWebsites.length > 0 && (
             <section>
-              <h2>Live Websites</h2>
+              <h2>{t.sites}</h2>
               <ul className="sites">
                 {cv.liveWebsites.map((s) => (
-                  <li key={s.url}>
+                  <li key={s._key}>
                     <a href={s.url}>{s.url}</a>
                     <span>{s.stack}</span>
                   </li>
@@ -84,16 +135,16 @@ export default async function CvPage() {
 
           {cv.experience.length > 0 && (
             <section>
-              <h2>Experience</h2>
+              <h2>{t.experience}</h2>
               {cv.experience.map((job) => (
-                <div className="entry" key={`${job.company}-${job.dateRange}`}>
+                <div className="entry" key={job._key}>
                   <div className="entry-head">
                     <span className="title">{job.company}</span>
-                    <span className="date">{job.dateRange}</span>
+                    <span className="date">{job.dateRange[lang]}</span>
                   </div>
-                  <div className="sub">{job.role}</div>
+                  <div className="sub">{job.role[lang]}</div>
                   <ul className="bullets">
-                    {job.bullets.map((b) => (
+                    {job.bullets[lang].map((b) => (
                       <li key={b}>{b}</li>
                     ))}
                   </ul>
@@ -104,16 +155,16 @@ export default async function CvPage() {
 
           {cv.education.length > 0 && (
             <section>
-              <h2>Education</h2>
+              <h2>{t.education}</h2>
               {cv.education.map((edu) => (
-                <div className="entry" key={`${edu.school}-${edu.dateRange}`}>
+                <div className="entry" key={edu._key}>
                   <div className="entry-head">
                     <span className="title">{edu.school}</span>
-                    <span className="date">{edu.dateRange}</span>
+                    <span className="date">{edu.dateRange[lang]}</span>
                   </div>
-                  <div className="sub">{edu.degree}</div>
+                  <div className="sub">{edu.degree[lang]}</div>
                   <ul className="bullets">
-                    {edu.bullets.map((b) => (
+                    {edu.bullets[lang].map((b) => (
                       <li key={b}>{b}</li>
                     ))}
                   </ul>
@@ -124,9 +175,9 @@ export default async function CvPage() {
 
           {cv.certifications.length > 0 && (
             <section>
-              <h2>Certification</h2>
+              <h2>{t.certification}</h2>
               {cv.certifications.map((c) => (
-                <div className="entry" key={`${c.title}-${c.year}`}>
+                <div className="entry" key={c._key}>
                   <div className="entry-head">
                     {c.url ? (
                       <a className="title" href={c.url}>
@@ -139,7 +190,7 @@ export default async function CvPage() {
                   </div>
                   <div className="sub">
                     {c.issuer}
-                    {c.credential && ` | Credential: ${c.credential}`}
+                    {c.credential && ` | ${t.credential}: ${c.credential}`}
                   </div>
                 </div>
               ))}
@@ -148,20 +199,20 @@ export default async function CvPage() {
 
           {cv.achievements.length > 0 && (
             <section className="last">
-              <h2>Achievement</h2>
+              <h2>{t.achievement}</h2>
               {cv.achievements.map((a) => (
-                <div className="entry" key={`${a.title}-${a.year}`}>
+                <div className="entry" key={a._key}>
                   <div className="entry-head">
                     {a.url ? (
                       <a className="title" href={a.url}>
-                        {a.title}
+                        {a.title[lang]}
                       </a>
                     ) : (
-                      <span className="title">{a.title}</span>
+                      <span className="title">{a.title[lang]}</span>
                     )}
                     <span className="date">{a.year}</span>
                   </div>
-                  <div className="sub">{a.subtitle}</div>
+                  <div className="sub">{a.subtitle[lang]}</div>
                 </div>
               ))}
             </section>
@@ -173,7 +224,7 @@ export default async function CvPage() {
             <span>{cv.phone}</span>
             <span>{cv.email}</span>
             <span>
-              portfolio: <a href={cv.portfolioUrl}>{portfolioLabel(cv.portfolioUrl)}</a>
+              {t.portfolio}: <a href={cv.portfolioUrl}>{portfolioLabel(cv.portfolioUrl)}</a>
             </span>
           </div>
         </footer>

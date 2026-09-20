@@ -1,14 +1,14 @@
 "use client";
 
-export function DownloadButton() {
+export function DownloadButton({ label, ariaLabel }: { label: string; ariaLabel: string }) {
   return (
     <button
       type="button"
       className="cv-download-btn"
       onClick={() => window.print()}
-      aria-label="Download CV as PDF"
+      aria-label={ariaLabel}
     >
-      Download PDF
+      {label}
     </button>
   );
 }

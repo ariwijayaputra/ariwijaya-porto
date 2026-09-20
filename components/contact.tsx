@@ -15,7 +15,8 @@ function getLinks(en: boolean) {
     },
     {
       label: en ? "View CV" : "Lihat CV",
-      href: "/cv",
+      // /cv defaults to Indonesian, so only English needs the param
+      href: en ? "/cv?lang=en" : "/cv",
       icon: (
         <path d="M6 2.5h8l4 4v15h-12zM14 2.5v4h4M9 12h6M9 15.5h6M9 8.5h3" />
       ),
