@@ -50,7 +50,8 @@
 .cv-doc section { border-bottom: 1.2pt solid var(--ink); padding: 9pt 0 8pt; }
 .cv-doc section.last { border-bottom: none; }
 .cv-doc h2 { font-size: 12pt; line-height: 16pt; font-weight: 400; color: var(--ink); margin-bottom: 5pt; }
-.cv-doc p b, .cv-doc p a { font-weight: 700; }
+.cv-doc p b, .cv-doc p strong, .cv-doc p a { font-weight: 700; }
+.cv-doc .cv-summary p + p { margin-top: 5pt; }
 
 .cv-doc .sites { list-style: none; padding-left: 0; }
 .cv-doc .sites li { display: flex; line-height: 18pt; }

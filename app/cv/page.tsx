@@ -1,4 +1,4 @@
-import { defineQuery } from "next-sanity";
+import { defineQuery, PortableText, type PortableTextBlock, type PortableTextComponents } from "next-sanity";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { client } from "@/sanity/lib/client";
@@ -25,6 +25,7 @@ type Cv = {
   email: string;
   portfolioUrl: string;
   summary: Loc;
+  summaryRich?: Partial<Record<Lang, PortableTextBlock[]>>;
   liveWebsites: Site[];
   experience: Job[];
   education: Education[];
@@ -32,8 +33,32 @@ type Cv = {
   achievements: Achievement[];
 };
 
+const summaryComponents: PortableTextComponents = {
+  marks: {
+    strong: ({ children }) => <strong>{children}</strong>,
+  },
+};
+
+function Summary({ blocks, fallback, role }: {
+  blocks?: PortableTextBlock[];
+  fallback?: string;
+  role: string;
+}) {
+  if (!blocks?.length) return <p>{fallback?.replaceAll("{role}", role)}</p>;
+
+  const value = blocks.map((block) => ({
+    ...block,
+    children: block.children.map((span) => ({
+      ...span,
+      text: span.text.replaceAll("{role}", role),
+    })),
+  }));
+
+  return <div className="cv-summary"><PortableText value={value} components={summaryComponents} /></div>;
+}
+
 const CV_QUERY = defineQuery(`*[_type == "cv"][0]{
-  name, role, location, phone, email, portfolioUrl, summary,
+  name, role, location, phone, email, portfolioUrl, summary, summaryRich,
   liveWebsites, experience, education, certifications, achievements
 }`);
 
@@ -116,7 +141,7 @@ export default async function CvPage(props: PageProps<"/cv">) {
         <main>
           <section>
             <h2>{t.summary}</h2>
-            <p>{cv.summary[lang].replaceAll("{role}", headlineRole)}</p>
+            <Summary blocks={cv.summaryRich?.[lang]} fallback={cv.summary?.[lang]} role={headlineRole} />
           </section>
 
           {cv.liveWebsites.length > 0 && (

@@ -25,11 +25,37 @@ export const cv = defineType({
 
     defineField({
       name: 'summary',
-      title: 'Summary',
+      title: 'Summary (plain text fallback)',
       description: 'Write {role} where the job title should go — it is replaced by the role above, or by the ?role= link the CV was opened with.',
       type: 'localeText',
       group: 'summary',
       validation: (r) => r.required(),
+    }),
+
+    defineField({
+      name: 'summaryRich',
+      title: 'Summary',
+      description: 'Copy your existing summary into each language below, then select words and click Bold. Use {role} for the dynamic job title. Empty languages use the plain text summary above.',
+      type: 'object',
+      group: 'summary',
+      fields: (['id', 'en'] as const).map((lang) =>
+        defineField({
+          name: lang,
+          title: lang === 'id' ? 'Bahasa Indonesia' : 'English',
+          type: 'array',
+          of: [
+            defineArrayMember({
+              type: 'block',
+              styles: [{ title: 'Normal', value: 'normal' }],
+              lists: [],
+              marks: {
+                decorators: [{ title: 'Bold', value: 'strong' }],
+                annotations: [],
+              },
+            }),
+          ],
+        }),
+      ),
     }),
 
     defineField({
